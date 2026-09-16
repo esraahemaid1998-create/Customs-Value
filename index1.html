@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصلحة الجمارك المصرية - نظام الاستعلام الجمركي</title>
+    <!-- خط تجوال العربي الاحترافي -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة قراءة ملفات الإكسيل -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0b2545;
+            --secondary-color: #134074;
+            --accent-color: #d4af37; /* ذهبي */
+            --accent-glow: rgba(212, 175, 55, 0.4);
+            --bg-color: #f0f4f8;
+            --text-color: #1d2d44;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #eef2f5 0%, #dbe5ed 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* الهيدر العلوي مع تأثير التوهج */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-color);
+            box-shadow: 0 6px 20px rgba(11, 37, 69, 0.25);
+            position: relative;
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header h2 {
+            margin: 8px 0 0 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+
+        /* زر إدارة البيانات (د/ إسراء) */
+        .admin-lock-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 7px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .admin-lock-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 12px var(--accent-glow);
+            transform: scale(1.05);
+        }
+
+        /* حاوية المحتوى الرئيسي */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+        }
+
+        /* الكروت والتصميم المتجاوب مع تأثيرات PowerPoint */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(11, 37, 69, 0.1);
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transform-origin: center;
+        }
+
+        /* حركات التبديل بين الشاشات */
+        .powerpoint-enter {
+            animation: zoomInPowerPoint 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+            background-size: 200% 100%;
+            animation: gradientMove 4s ease infinite;
+        }
+
+        /* شاشة الترحيب */
+        .welcome-msg {
+            font-size: 30px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 800;
+            animation: pulseText 2s ease-in-out infinite alternate;
+        }
+
+        .datetime {
+            background: linear-gradient(135deg, #eef4f8, #e2ebf2);
+            color: var(--secondary-color);
+            padding: 12px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            border: 1px solid #c8d9e6;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* لوحة رفع الملف للمسؤول */
+        .admin-panel {
+            background: #fffdf0;
+            border: 2px dashed var(--accent-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: right;
+            animation: fadeInDown 0.5s ease forwards;
+        }
+
+        .admin-panel label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #8a6d3b;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-danger { background: #f8d7da; color: #721c24; }
+
+        /* مدخلات البحث */
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .input-group { grid-template-columns: 1fr; }
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 14px 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Tajawal', sans-serif;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            width: 100%;
+            background: #ffffff;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(19, 64, 116, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* الأزرار بحركات الباوربوينت */
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 14px 45px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 15px rgba(11, 37, 69, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 22px rgba(11, 37, 69, 0.35);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* الجدول والانتقالات التدريجية للصفوف */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #334155;
+            transition: background 0.2s;
+        }
+
+        /* حركة ظهور صفوف الجدول بالتدريج زي الباوربوينت */
+        tr.row-anim {
+            opacity: 0;
+            animation: rowSlideUp 0.5s ease forwards;
+        }
+
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #eef4f8; }
+
+        /* الفوتر */
+        footer {
+            background-color: var(--primary-color);
+            color: #a0aec0;
+            text-align: center;
+            padding: 18px;
+            font-size: 14px;
+            border-top: 1px solid #1e3a5f;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        footer strong {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Keyframe Animations (حركات PowerPoint) --- */
+        @keyframes zoomInPowerPoint {
+            0% {
+                opacity: 0;
+                transform: scale(0.85) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes rowSlideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر الثابت -->
+    <header>
+        <button class="admin-lock-btn" onclick="toggleAdminPanel()">🔒 إدارة البيانات</button>
+        <h1>مصلحة الجمارك المصرية</h1>
+        <h2>الإدارة العامة لجمارك الأسواق الحرة</h2>
+    </header>
+
+    <main>
+        <!-- الواجهة الأولى: الترحيب والوقت -->
+        <div id="welcome-screen" class="card powerpoint-enter">
+            <div class="welcome-msg">مرحبا بك ... يوم لذيذ</div>
+            <div id="date-time" class="datetime"></div>
+            <div>
+                <button class="btn" onclick="goToSearch()">الدخول لنظام البحث</button>
+            </div>
+        </div>
+
+        <!-- الواجهة الثانية: صفحة البحث -->
+        <div id="search-screen" class="card hidden">
+            <h3 style="color: var(--primary-color); margin-top: 0; margin-bottom: 25px; font-size: 22px;">نظام الاستعلام عن القيم الجمركية</h3>
+            
+            <!-- لوحة تحكم المسؤول الخافية لرفع وتحديث الملف (د/إسراء) -->
+            <div id="admin-section" class="admin-panel hidden">
+                <label>🔒 لوحة الإدارة (د/ إسراء حميد) - تحديث قاعدة البيانات:</label>
+                <input type="file" id="excel-file" accept=".xlsx, .xls" />
+                <div id="db-status" class="status-badge status-danger">لا توجد قاعدة بيانات محملة حالياً</div>
+            </div>
+
+            <!-- مدخلات البحث -->
+            <div class="input-group">
+                <input type="text" id="barcode-input" placeholder="البحث بالكود الدولي...">
+                <input type="text" id="item-name-input" placeholder="البحث باسم الصنف...">
+            </div>
+
+            <!-- زر البحث -->
+            <button class="btn" onclick="performSearch()">بحث</button>
+
+            <!-- جدول النتائج -->
+            <div class="table-responsive">
+                <table id="results-table" class="hidden">
+                    <thead>
+                        <tr>
+                            <th>التسلسل</th>
+                            <th>الكود الدولي</th>
+                            <th>اسم الصنف</th>
+                            <th>القيمة الجمركية (آخر تحديث)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- الفوتر مع اسم المصممة -->
+    <footer>
+        تصميم: <strong>د/إسراء أحمد حميد</strong>
+    </footer>
+
+    <script>
+        let excelData = [];
+        const ADMIN_PASSWORD = "123"; // كلمة السر للوصول لخانة رفع الإكسيل
+
+        // تحميل البيانات المحفوظة تلقائياً
+        window.onload = function() {
+            const savedData = localStorage.getItem('customs_excel_db');
+            if (savedData) {
+                excelData = JSON.parse(savedData);
+                updateDbStatus(true, excelData.length);
+            }
+        };
+
+        // تحديث الوقت والتاريخ
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('date-time').innerText = now.toLocaleDateString('ar-EG', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // الانتقال لصفحة البحث بحركة PowerPoint
+        function goToSearch() {
+            const welcome = document.getElementById('welcome-screen');
+            const search = document.getElementById('search-screen');
+            
+            welcome.classList.add('hidden');
+            search.classList.remove('hidden');
+            search.classList.remove('powerpoint-enter');
+            // إعادة تفعيل الأنيميشن
+            void search.offsetWidth; 
+            search.classList.add('powerpoint-enter');
+        }
+
+        // إظهار/إخفاء لوحة الإدارة لرفع الملف
+        function toggleAdminPanel() {
+            const adminSection = document.getElementById('admin-section');
+            if (adminSection.classList.contains('hidden')) {
+                const password = prompt("يرجى إدخال كلمة السر الخاصة بإدارة النظام:");
+                if (password === ADMIN_PASSWORD) {
+                    adminSection.classList.remove('hidden');
+                    goToSearch();
+                } else if (password !== null) {
+                    alert("كلمة السر غير صحيحة!");
+                }
+            } else {
+                adminSection.classList.add('hidden');
+            }
+        }
+
+        // قراءة الملف وحفظه
+        document.getElementById('excel-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.SheetNames[0];
+                excelData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                
+                try {
+                    localStorage.setItem('customs_excel_db', JSON.stringify(excelData));
+                    alert('تم تحديث وحفظ قاعدة البيانات بنجاح!');
+                    updateDbStatus(true, excelData.length);
+                } catch (err) {
+                    alert('تم تحميل البيانات مؤقتاً.');
+                    updateDbStatus(true, excelData.length);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function updateDbStatus(isLoaded, count) {
+            const badge = document.getElementById('db-status');
+            if (isLoaded) {
+                badge.className = "status-badge status-success";
+                badge.innerText = `✓ قاعدة البيانات متصلة (${count} صنف)`;
+            } else {
+                badge.className = "status-badge status-danger";
+                badge.innerText = "لا توجد قاعدة بيانات محملة حالياً";
+            }
+        }
+
+        // تنفيذ البحث بعرض الحركات لصفوف الجدول
+        function performSearch() {
+            if (excelData.length === 0) {
+                alert('عفواً، لا توجد قاعدة بيانات مسجلة حالياً! يرجى التواصل مع المسؤول لتحديث البيانات.');
+                return;
+            }
+
+            const barcodeQuery = document.getElementById('barcode-input').value.trim().toLowerCase();
+            const nameQuery = document.getElementById('item-name-input').value.trim().toLowerCase();
+
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = '';
+
+            const filteredResults = excelData.filter(row => {
+                const barcodeMatch = barcodeQuery ? String(row['الكود الدولي'] || '').toLowerCase().includes(barcodeQuery) : true;
+                const nameMatch = nameQuery ? String(row['اسم الصنف'] || '').toLowerCase().includes(nameQuery) : true;
+                return barcodeMatch && nameMatch;
+            });
+
+            if (filteredResults.length === 0) {
+                alert('لم يتم العثور على أي نتائج تطابق البحث.');
+                document.getElementById('results-table').classList.add('hidden');
+                return;
+            }
+
+            // إضافة النتائج مع تأخير الزمني (Staggered Animation) لظهور الصفوف بالتدريج
+            filteredResults.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'row-anim';
+                tr.style.animationDelay = `${index * 0.08}s`; // ظهور كل صف بعد الآخر بفارق أجزاء من الثانية
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${row['الكود الدولي'] || '-'}</td>
+                    <td>${row['اسم الصنف'] || '-'}</td>
+                    <td><strong style="color: var(--primary-color);">${row['القيمة الجمركية'] || '-'}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('results-table').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
