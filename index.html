@@ -61,22 +61,26 @@
       border: 1px solid rgba(197, 160, 89, 0.3);
     }
 
-    .designer-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #134074, #0b2545);
+    /* تصميم شارة الدكتورة إسراء أحمد حميد */
+    .doctor-tag {
+      background: linear-gradient(135deg, #0b2545 0%, #134074 100%);
       color: #ffffff;
-      padding: 8px 22px;
+      border: 2px solid var(--accent-gold);
+      padding: 12px 28px;
       border-radius: 50px;
-      font-size: 15px;
+      display: inline-block;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 20px rgba(197, 160, 89, 0.3);
+      font-size: 18px;
       font-weight: 800;
-      border: 1.5px solid var(--accent-gold);
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(197, 160, 89, 0.25);
     }
-    .designer-badge span { color: var(--accent-gold); }
+    .doctor-tag strong {
+      color: var(--accent-gold);
+      font-size: 20px;
+    }
 
-    .welcome-icon { font-size: 55px; margin-bottom: 15px; display: inline-block; }
-    .welcome-title { font-size: 30px; font-weight: 900; color: var(--primary-color); margin-bottom: 8px; }
+    .welcome-icon { font-size: 50px; margin-bottom: 10px; display: block; }
+    .welcome-title { font-size: 28px; font-weight: 900; color: var(--primary-color); margin-bottom: 8px; }
 
     .clock-box {
       background: linear-gradient(135deg, #f8fafc, #f1f5f9);
@@ -130,7 +134,7 @@
       background: var(--primary-color); color: #94a3b8; text-align: center;
       padding: 18px; font-size: 14px; border-top: 3px solid var(--accent-gold);
     }
-    footer strong { color: var(--accent-gold); }
+    footer strong { color: var(--accent-gold); font-weight: 900; }
     .hidden { display: none !important; }
     .loading-spinner { font-weight: bold; color: var(--primary-color); margin: 20px 0; font-size: 17px; }
   </style>
@@ -138,7 +142,7 @@
 <body>
 
   <header>
-    <button class="btn-home hidden" id="home-btn" onclick="goToWelcomeScreen()">🏠 الرئيسية</button>
+    <button class="btn-home hidden" id="home-btn" onclick="goToWelcomeScreen()">الرئيسية</button>
     <div class="titles">
       <h1>مصلحة الجمارك المصرية</h1>
       <h2>الإدارة العامة لجمارك الأسواق الحرة بالغردقة</h2>
@@ -147,10 +151,14 @@
 
   <main>
     <div id="welcome-screen" class="card">
-      <div class="designer-badge">💡 تصميم وتطوير: <span>د/ إسراء أحمد حميد</span></div>
-      <br>
+      
+      <!-- إهداء التصميم والتطوير للدكتورة إسراء -->
+      <div class="doctor-tag">
+        فكرة وتصميم وتطوير | <strong>د/ إسراء أحمد حميد</strong>
+      </div>
+
       <div class="welcome-icon">✨</div>
-      <div class="welcome-title">مرحباً بك، يومك لذيذ</div>
+      <div class="welcome-title">مرحباً بك، يومك سعيد</div>
 
       <div class="clock-box">
         <div id="live-time" class="time-display">--:--:-- --</div>
@@ -178,11 +186,11 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn" onclick="performSearch()">🔍 بحث</button>
-        <button class="btn btn-secondary" onclick="resetSearch()">🔄 بحث جديد</button>
+        <button class="btn" onclick="performSearch()">بحث</button>
+        <button class="btn btn-secondary" onclick="resetSearch()">بحث جديد</button>
       </div>
 
-      <div id="loading" class="loading-spinner hidden">⚡ جاري البحث السريع...</div>
+      <div id="loading" class="loading-spinner hidden">جاري البحث السريع...</div>
 
       <div id="results-wrapper" class="hidden">
         <div class="results-container">
@@ -196,13 +204,13 @@
       </div>
 
       <div id="no-results" class="hidden" style="margin-top: 20px; color: #dc2626; font-weight: bold; font-size: 16px;">
-        ❌ لم يتم العثور على صنف مطابق لبيانات البحث.
+        لم يتم العثور على صنف مطابق لبيانات البحث.
       </div>
     </div>
   </main>
 
   <footer>
-    تطوير وتصميم | <strong>د/ إسراء أحمد حميد</strong> - جمارك الأسواق الحرة بالغردقة &copy; 2026
+    تصميم وتطوير | <strong>د/ إسراء أحمد حميد</strong> - جمارك الأسواق الحرة بالغردقة &copy; 2026
   </footer>
 
   <script>
@@ -284,7 +292,6 @@
           const keys = Object.keys(data[0]);
           keys.forEach(key => {
             const th = document.createElement('th');
-            // عرض العنوان بالعربي من القاموس أو استخدام الاسم الأصلي
             th.innerText = columnLabels[key] || key;
             headRow.appendChild(th);
           });
