@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مصلحة الجمارك المصرية - الإدارة العامة لجمارك الأسواق الحرة بالغردقة</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- مكتبة Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --primary-color: #0b2545;
@@ -188,8 +190,10 @@
   </footer>
 
   <script>
-    // 🔗 الرابط الجديد الخاص بكِ تم تحديثه بنجاح
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1QiY6r2V0waGJEFNROR8brWj4K3wDj3YdzkmjVKTts2n-DhZ1imcNUA2nwSuCKib0/exec";
+    const SUPABASE_URL = "https://vpfleorrpcjvhkcqpnjx.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_ytUhx4hdJY1_AR6NSJm4ug_3Cwr8A0d"; 
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function updateClock() {
       const now = new Date();
@@ -235,26 +239,36 @@
       loading.classList.remove('hidden');
 
       try {
-        const url = `${GOOGLE_SCRIPT_URL}?barcode=${encodeURIComponent(barcodeQuery)}&name=${encodeURIComponent(nameQuery)}`;
-        const response = await fetch(url);
-        const data = await response.json();
+        let query = db.from('products').select('*');
+
+        if (barcodeQuery) {
+          query = query.ilike('الكود الدولي', `%${barcodeQuery}%`);
+        }
+        if (nameQuery) {
+          query = query.ilike('اسم الصنف', `%${nameQuery}%`);
+        }
+
+        const { data, error } = await query.limit(50);
 
         loading.classList.add('hidden');
         headRow.innerHTML = '';
         bodyRows.innerHTML = '';
 
-        if (data.results && data.results.length > 0) {
-          data.headers.forEach(h => {
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const keys = Object.keys(data[0]);
+          keys.forEach(key => {
             const th = document.createElement('th');
-            th.innerText = h || '';
+            th.innerText = key;
             headRow.appendChild(th);
           });
 
-          data.results.forEach(row => {
+          data.forEach(row => {
             const tr = document.createElement('tr');
-            row.forEach(cell => {
+            keys.forEach(key => {
               const td = document.createElement('td');
-              td.innerText = cell !== undefined && cell !== null ? cell : '';
+              td.innerText = row[key] !== null && row[key] !== undefined ? row[key] : '';
               tr.appendChild(td);
             });
             bodyRows.appendChild(tr);
@@ -266,7 +280,7 @@
         }
       } catch (err) {
         loading.classList.add('hidden');
-        alert('حدث خطأ أثناء جلب البيانات.');
+        alert('حدث خطأ أثناء البحث في قاعدة البيانات.');
       }
     }
 
