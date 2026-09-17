@@ -279,9 +279,10 @@
           noResults.classList.remove('hidden');
         }
       } catch (err) {
-        loading.classList.add('hidden');
-        alert('حدث خطأ أثناء البحث في قاعدة البيانات.');
-      }
+    loading.classList.add('hidden');
+    console.error('Database Error:', err);
+    alert('حدث خطأ أثناء البحث: ' + (err.message || JSON.stringify(err)));
+  }
     }
 
     function resetSearch() {
