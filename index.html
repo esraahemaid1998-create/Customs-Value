@@ -242,7 +242,7 @@
         let query = db.from('products').select('*');
 
         if (barcodeQuery) {
-          query = query.ilike('الكود الدولي', `%${barcodeQuery}%`);
+          query = query.ilike('الكود الدولي ', `%${barcodeQuery}%`);
         }
         if (nameQuery) {
           query = query.ilike('اسم الصنف', `%${nameQuery}%`);
@@ -279,10 +279,10 @@
           noResults.classList.remove('hidden');
         }
       } catch (err) {
-    loading.classList.add('hidden');
-    console.error('Database Error:', err);
-    alert('حدث خطأ أثناء البحث: ' + (err.message || JSON.stringify(err)));
-  }
+        loading.classList.add('hidden');
+        console.error('Database Error:', err);
+        alert('حدث خطأ أثناء البحث: ' + (err.message || JSON.stringify(err)));
+      }
     }
 
     function resetSearch() {
