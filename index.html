@@ -195,6 +195,14 @@
 
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // قاموس ترجمة أسماء الأعمدة للعربية للموظفين
+    const columnLabels = {
+      'barcode': 'الكود الدولي',
+      'name': 'اسم الصنف',
+      'price': 'القيمة الجمركية الحديثة',
+      'date': 'تاريخ التحديث'
+    };
+
     function updateClock() {
       const now = new Date();
       const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
@@ -242,10 +250,10 @@
         let query = db.from('products').select('*');
 
         if (barcodeQuery) {
-          query = query.ilike('الكود الدولي ', `%${barcodeQuery}%`);
+          query = query.ilike('barcode', `%${barcodeQuery}%`);
         }
         if (nameQuery) {
-          query = query.ilike('اسم الصنف', `%${nameQuery}%`);
+          query = query.ilike('name', `%${nameQuery}%`);
         }
 
         const { data, error } = await query.limit(50);
@@ -260,7 +268,8 @@
           const keys = Object.keys(data[0]);
           keys.forEach(key => {
             const th = document.createElement('th');
-            th.innerText = key;
+            // عرض العنوان بالعربي من القاموس أو استخدام الاسم الأصلي
+            th.innerText = columnLabels[key] || key;
             headRow.appendChild(th);
           });
 
